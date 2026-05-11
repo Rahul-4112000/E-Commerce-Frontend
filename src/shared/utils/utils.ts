@@ -6,7 +6,7 @@ export function cn(...classes: (string | undefined | null | boolean | { [key: st
   return classes
     .filter(Boolean)
     .map((c) => {
-      if (typeof c === 'object') {
+      if (typeof c === 'object' && c !== null) {
         return Object.entries(c)
           .filter(([_, value]) => Boolean(value))
           .map(([key]) => key)

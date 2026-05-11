@@ -7,7 +7,7 @@ interface HeadingProps {
 }
 
 export const Heading: React.FC<HeadingProps> = ({ level = 1, children, className = '' }) => {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const Tag = `h${level}` as React.ElementType;
   
   const styles = {
     1: 'text-4xl font-extrabold tracking-tight text-gray-900',
