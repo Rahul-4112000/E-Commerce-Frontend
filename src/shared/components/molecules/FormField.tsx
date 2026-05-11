@@ -1,15 +1,22 @@
-import React from 'react';
-import { Label } from '@/shared/components/atoms/Label';
-import { Input } from '@/shared/components/atoms/Input';
-import { LucideIcon } from 'lucide-react';
+import React from "react";
+import { Label } from "@/shared/components/atoms/Label";
+import { Input } from "@/shared/components/atoms/Input";
+import { LucideIcon } from "lucide-react";
 
 interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   icon?: LucideIcon;
+  // onChange: (event:Event) => void;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ label, error, icon: Icon, ...props }) => {
+export const FormField: React.FC<FormFieldProps> = ({
+  label,
+  error,
+  onChange,
+  icon: Icon,
+  ...props
+}) => {
   return (
     <div className="flex flex-col mb-4">
       <Label htmlFor={props.id}>{label}</Label>
@@ -19,10 +26,11 @@ export const FormField: React.FC<FormFieldProps> = ({ label, error, icon: Icon, 
             <Icon size={18} strokeWidth={2.5} />
           </div>
         )}
-        <Input 
-          error={!!error} 
-          className={Icon ? 'pl-11' : ''} 
-          {...props} 
+        <Input
+          onChange={onChange}
+          error={!!error}
+          className={Icon ? "pl-11" : ""}
+          {...props}
         />
       </div>
       {error && (
