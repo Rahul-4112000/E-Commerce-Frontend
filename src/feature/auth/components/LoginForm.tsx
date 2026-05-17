@@ -5,12 +5,101 @@ import { Heading } from "@/shared/components/atoms/Heading";
 import { Button } from "@/shared/components/atoms/Button";
 import { FormField } from "@/shared/components/molecules/FormField";
 import { Mail, Lock } from "lucide-react";
+import { API_PATHS, BASE_URL } from "@/config/api.path";
+import { Loader } from "lucide-react";
+import { showToast } from "@/shared/utils/toast.util";
+import { EROLE } from "../types/auth.type";
+import { useRouter } from "next/navigation";
+
+type loginCredential = {
+  email: string;
+  password: string;
+};
 
 export const LoginForm: React.FC = () => {
-  const [loginCredential, setLoginCredential] = useState({
+  const router = useRouter();
+  const [loginCredential, setLoginCredential] = useState<loginCredential>({
     email: "",
     password: "",
   });
+  const [errors, setErros] = useState<Partial<loginCredential>>({});
+  const [loading, setLoading] = useState(false);
+
+  const onChangeInputField = (value: string, key: string) => {
+    setLoginCredential((prevState) => {
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
+  };
+
+  const validateLoginCredential = (loginCredential: loginCredential) => {
+    const error: Partial<loginCredential> = {};
+
+    if (loginCredential.email === "" || !loginCredential.email.includes("@")) {
+      error.email = "email is not valid";
+    }
+
+    if (
+      loginCredential.password === "" ||
+      loginCredential.password.length < 5 ||
+      loginCredential.password.length > 10
+    ) {
+      error.password = "password is not valid";
+    }
+
+    return error;
+  };
+
+  const onSubmit = async (event: React.SubmitEvent) => {
+    event.preventDefault();
+
+    const errors = validateLoginCredential(loginCredential);
+
+    if (Object.keys(errors).length > 0) {
+      setErros(errors);
+      return;
+    }
+
+    setErros({});
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/${API_PATHS.login}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginCredential),
+        credentials: 'include'
+      }
+      );
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "something went wrong");
+      }
+      showToast.success("Successfully Login");
+
+      if (data.user.role === EROLE.SUPER_ADMIN) {
+        router.push("/super_admin");
+        return;
+      }
+
+      if (data.user.role === EROLE.ADMIN) {
+        router.push("/admin");
+        return;
+      }
+
+      router.push("/home");
+    } catch (error: any) {
+      showToast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -26,7 +115,7 @@ export const LoginForm: React.FC = () => {
         </p>
       </div>
 
-      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-6" onSubmit={onSubmit}>
         <FormField
           id="email"
           label="Email Address"
@@ -34,7 +123,11 @@ export const LoginForm: React.FC = () => {
           placeholder="Enter your email"
           required
           icon={Mail}
-          // onChange={onChangeInputField}
+          value={loginCredential.email}
+          onChange={(event) => {
+            onChangeInputField(event.target.value, "email");
+          }}
+          error={errors.email}
         />
         <FormField
           id="password"
@@ -43,7 +136,11 @@ export const LoginForm: React.FC = () => {
           placeholder="••••••••"
           required
           icon={Lock}
-          // onChange={onChangeInputField}
+          value={loginCredential.password}
+          onChange={(event) => {
+            onChangeInputField(event.target.value, "password");
+          }}
+          error={errors.password}
         />
 
         <div className="flex items-center justify-between">
@@ -65,11 +162,16 @@ export const LoginForm: React.FC = () => {
         </div>
 
         <Button
+          disabled={loading}
           type="submit"
           fullWidth
           className="h-12 text-base font-bold bg-neutral-900 hover:bg-neutral-800 text-white rounded-none"
         >
-          SIGN IN
+          {loading ? (
+            <Loader className="mx-auto" strokeWidth={"2px"} color="#fff" />
+          ) : (
+            "SIGN IN"
+          )}
         </Button>
 
         <div className="relative my-10">
