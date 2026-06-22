@@ -22,10 +22,11 @@ export default async function InvitePage({ searchParams }: props) {
 
   let data;
   try {
-    data = await postApi(API_PATHS.validateInvite, { inviteToken });
+    data = await postApi(API_PATHS.superAdmin.validateInvite, { inviteToken });
   } catch {
     return <InvalidInvite />;
   }
+
 
   if (!data?.success) {
     return <InvalidInvite />;

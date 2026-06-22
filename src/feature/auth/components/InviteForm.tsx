@@ -1,21 +1,21 @@
-"use client";
-import React, { useState } from "react";
-import { Heading } from "@/shared/components/atoms/Heading";
-import { Button } from "@/shared/components/atoms/Button";
-import { FormField } from "@/shared/components/molecules/FormField";
-import { Lock, Loader } from "lucide-react";
-import { showToast } from "@/shared/utils/toast.util";
-import { useRouter, useSearchParams } from "next/navigation";
-import { postApi } from "@/shared/utils/api-connector";
-import { API_PATHS } from "@/config/api.path";
+'use client';
+import React, { useState } from 'react';
+import { Heading } from '@/shared/components/atoms/Heading';
+import { Button } from '@/shared/components/atoms/Button';
+import { FormField } from '@/shared/components/molecules/FormField';
+import { Lock, Loader } from 'lucide-react';
+import { showToast } from '@/shared/utils/toast.util';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { postApi } from '@/shared/utils/api-connector';
+import { API_PATHS } from '@/config/api.path';
 
 export const InviteForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('inviteToken');
 
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -23,11 +23,11 @@ export const InviteForm: React.FC = () => {
     const error: { password?: string; confirmPassword?: string } = {};
 
     if (!password || password.length < 5 || password.length > 10) {
-      error.password = "Password must be between 5 and 10 characters";
+      error.password = 'Password must be between 5 and 10 characters';
     }
 
     if (password !== confirmPassword) {
-      error.confirmPassword = "Passwords do not match";
+      error.confirmPassword = 'Passwords do not match';
     }
 
     return error;
@@ -46,38 +46,33 @@ export const InviteForm: React.FC = () => {
     setLoading(true);
 
     try {
-    
-      await postApi(API_PATHS.admin.register, { password, confirmPassword, inviteToken })
-      
-      showToast.success("Account Activate successfully!");
-      router.push("/admin");
+      await postApi(API_PATHS.admin.register, { password, confirmPassword, inviteToken });
+      showToast.success('Account Activate successfully!');
+      router.push('/admin');
     } catch (error: any) {
-      showToast.error(error.message || "Something went wrong");
+      showToast.error(error.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full">
-      <div className="mb-10">
-        <Heading
-          level={2}
-          className="text-4xl font-black mb-3 text-neutral-900"
-        >
+    <div className='w-full'>
+      <div className='mb-10'>
+        <Heading level={2} className='text-4xl font-black mb-3 text-neutral-900'>
           Set Password
         </Heading>
-        <p className="text-neutral-500 font-medium">
+        <p className='text-neutral-500 font-medium'>
           Welcome to eRath! Please set your password to activate your account.
         </p>
       </div>
 
-      <form className="space-y-6" onSubmit={onSubmit}>
+      <form className='space-y-6' onSubmit={onSubmit}>
         <FormField
-          id="password"
-          label="Password"
-          type="password"
-          placeholder="••••••••"
+          id='password'
+          label='Password'
+          type='password'
+          placeholder='••••••••'
           required
           icon={Lock}
           value={password}
@@ -85,10 +80,10 @@ export const InviteForm: React.FC = () => {
           error={errors.password}
         />
         <FormField
-          id="confirmPassword"
-          label="Confirm Password"
-          type="password"
-          placeholder="••••••••"
+          id='confirmPassword'
+          label='Confirm Password'
+          type='password'
+          placeholder='••••••••'
           required
           icon={Lock}
           value={confirmPassword}
@@ -98,15 +93,11 @@ export const InviteForm: React.FC = () => {
 
         <Button
           disabled={loading}
-          type="submit"
+          type='submit'
           fullWidth
-          className="h-12 text-base font-bold bg-neutral-900 hover:bg-neutral-800 text-white rounded-none mt-4"
+          className='h-12 text-base font-bold bg-neutral-900 hover:bg-neutral-800 text-white rounded-none mt-4'
         >
-          {loading ? (
-            <Loader className="mx-auto" strokeWidth={"2px"} color="#fff" />
-          ) : (
-            "ACTIVATE ACCOUNT"
-          )}
+          {loading ? <Loader className='mx-auto' strokeWidth={'2px'} color='#fff' /> : 'ACTIVATE ACCOUNT'}
         </Button>
       </form>
     </div>

@@ -4,6 +4,8 @@ export const apiConnectors = async (request: RequestInfo | URL) => {
   try {
     const response = await fetch(request);
 
+    console.log(response, 'response -----')
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
       throw new Error(
