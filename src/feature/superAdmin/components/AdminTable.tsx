@@ -113,7 +113,7 @@ export const AdminTable = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50 p-5 rounded-2xl border border-gray-200">
         <SearchInput placeholder="Search admins..." />
         <div className="text-sm text-gray-500 font-medium bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
-          Total: <span className="text-indigo-600 font-semibold">{adminList.count}</span> Admins
+          Total: <span className="text-indigo-600 font-semibold">{adminList.count}</span> {adminList.count === 1 ? 'Admin' : 'Admins'}
         </div>
       </div>
 

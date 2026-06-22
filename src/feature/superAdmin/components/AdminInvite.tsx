@@ -6,6 +6,7 @@ import { emailValidation } from "@/shared/validation/validation";
 import { showToast } from "@/shared/utils/toast.util";
 import { postApi } from "@/shared/utils/api-connector";
 import { API_PATHS } from "@/config/api.path";
+import { Button } from "@/shared/components/atoms/Button";
 
 const initialState = {
   email: "",
@@ -74,13 +75,14 @@ export const AdminInvite = () => {
             className="w-full pl-10 pr-4 py-2 bg-transparent focus:outline-none text-sm text-gray-800 placeholder-gray-400"
           />
         </div>
-        <button
+        <Button
           onClick={handleSubmit}
+          disabled={adminData.loading}
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors shadow-sm cursor-pointer"
         >
-          {adminData.loading ? <Loader size={16} /> : <Send size={16} />}
-          Invite
-        </button>
+          {adminData.loading ? <Loader size={16} /> : <span className="flex gap-2"><Send size={16} className="mt-0.5" /> Invite</span>}
+
+        </Button>
       </div>
     </div>
   );
