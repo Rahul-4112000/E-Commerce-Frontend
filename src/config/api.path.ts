@@ -1,6 +1,8 @@
 export const API_PATHS = {
-  login: "user/login",
-  register: "user/register",
+  auth: {
+    login: 'auth/login',
+    logout: 'auth/logout'
+  },
   verify: "user/auth/verify",
   invite: "super-admin/invite",
   admin: {
@@ -10,6 +12,9 @@ export const API_PATHS = {
     admin: 'super-admin/admin',
     validateInvite: "super-admin/validate-invite",
     status: 'super-admin/admin/status'
+  },
+  user: {
+    profile: 'user/profile'
   }
 } as const;
 

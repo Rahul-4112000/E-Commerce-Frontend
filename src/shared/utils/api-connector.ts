@@ -26,7 +26,7 @@ export const getApi = async (apiEndPoint: string) => {
   return await apiConnectors(request);
 };
 
-export const postApi = async (apiEndPoint: string, body: any) => {
+export const postApi = async (apiEndPoint: string, body?: any) => {
   const request = new Request(`${BASE_URL}/${apiEndPoint}`, {
     method: "POST",
     headers: {

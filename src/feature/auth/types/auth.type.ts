@@ -5,6 +5,7 @@ export const EROLE = {
 }
 
 export type user = {
+    _id: string;
     name: string;
     email: string;
     role: 'admin' | 'super_admin' | 'user';
@@ -12,3 +13,12 @@ export type user = {
 }
 
 
+export type userProfileResponse = {
+    success: boolean,
+    user: user
+}
+
+export type logoutResponse = {
+    success: boolean,
+    message: string
+}

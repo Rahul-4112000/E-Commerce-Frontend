@@ -67,7 +67,7 @@ export const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/${API_PATHS.login}`, {
+      const res = await fetch(`${BASE_URL}/${API_PATHS.auth.login}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
