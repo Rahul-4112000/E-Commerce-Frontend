@@ -12,7 +12,6 @@ export type user = {
     isActive: boolean
 }
 
-
 export type userProfileResponse = {
     success: boolean,
     user: user
@@ -21,4 +20,9 @@ export type userProfileResponse = {
 export type logoutResponse = {
     success: boolean,
     message: string
+}
+
+export type AdminData = {
+    count: number,
+    admin: user[]
 }

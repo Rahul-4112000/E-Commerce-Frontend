@@ -1,39 +1,47 @@
 'use client'
-
-import React, { useEffect, useState } from "react";
 import { SearchInput } from "@/shared/components/molecules/SearchInput";
 import { Table, Column } from "@/shared/components/organisms/Table";
-import { getApi } from "@/shared/utils/api-connector";
-import { API_PATHS } from "@/config/api.path";
 import { useApi } from "@/shared/hooks/use.api";
 import { AdminService } from "../services/admin.service";
-
-export type TAdmin = {
-  _id: number;
-  name?: string;
-  email: string;
-  isActive: boolean;
-};
-
-export type AdminData = {
-  count: number,
-  admin: TAdmin[]
-}
+import { AdminData, user } from "@/feature/auth/types/auth.type";
+import { useRef, useCallback, useState } from "react";
 
 const initialAdminState: AdminData = {
   count: 0,
   admin: [],
-
 }
 
+const DEBOUNCE_DELAY = 400;
+
 export const AdminTable = () => {
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: adminList, isLoading, setData: setAdminData } = useApi(AdminService.getAll, {
     immediate: true,
     initialData: initialAdminState
   });
 
-  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
+  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(async () => {
+      try {
+        const result = await AdminService.search(query.trim())
+        setAdminData(result);
+      } catch {
+        // silently ignore search errors
+      }
+    }, DEBOUNCE_DELAY);
+  }, [setAdminData]);
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
 
     try {
       setAdminData((prevState) => ({
@@ -53,7 +61,7 @@ export const AdminTable = () => {
   };
 
 
-  const columns: Column<TAdmin>[] = [
+  const columns: Column<user>[] = [
     {
       header: "Name",
       key: "name",
@@ -111,7 +119,11 @@ export const AdminTable = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50 p-5 rounded-2xl border border-gray-200">
-        <SearchInput placeholder="Search admins..." />
+        <SearchInput
+          placeholder="Search admins..."
+          value={searchQuery}
+          onChange={handleSearch}
+        />
         <div className="text-sm text-gray-500 font-medium bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
           Total: <span className="text-indigo-600 font-semibold">{adminList.count}</span> {adminList.count === 1 ? 'Admin' : 'Admins'}
         </div>

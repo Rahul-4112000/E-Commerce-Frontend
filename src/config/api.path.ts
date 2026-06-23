@@ -11,7 +11,8 @@ export const API_PATHS = {
   superAdmin: {
     admin: 'super-admin/admin',
     validateInvite: "super-admin/validate-invite",
-    status: 'super-admin/admin/status'
+    status: 'super-admin/admin/status',
+    search: 'super-admin/admin/search'
   },
   user: {
     profile: 'user/profile'
