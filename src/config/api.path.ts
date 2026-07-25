@@ -1,22 +1,20 @@
 export const API_PATHS = {
   auth: {
     login: 'auth/login',
-    logout: 'auth/logout'
+    logout: 'auth/logout',
+    profile: 'auth/profile',
   },
-  verify: "user/auth/verify",
-  invite: "super-admin/invite",
+  verify: 'user/auth/verify',
+  invite: 'super-admin/invite',
   admin: {
-    register: "admin/register",
+    register: 'admin/register',
   },
   superAdmin: {
     admin: 'super-admin/admin',
-    validateInvite: "super-admin/validate-invite",
+    validateInvite: 'super-admin/validate-invite',
     status: 'super-admin/admin/status',
-    search: 'super-admin/admin/search'
+    search: 'super-admin/admin/search',
   },
-  user: {
-    profile: 'user/profile'
-  }
 } as const;
 
-export const BASE_URL = "http://localhost:8080/api/v1";
+export const BASE_URL = 'http://localhost:8080/api/v1';
