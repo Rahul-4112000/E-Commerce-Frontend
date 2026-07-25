@@ -1,7 +1,7 @@
 import React from 'react';
-import { Navbar } from '../../src/shared/components/organisms/Navbar';
-import { AdminInvite } from '../../src/feature/superAdmin/components/AdminInvite';
-import { AdminTable } from '../../src/feature/superAdmin/components/AdminTable';
+import { Navbar } from '../../../src/shared/components/organisms/Navbar';
+import { AdminInvite } from '../../../src/feature/admins/components/AdminInvite';
+import { AdminTable } from '../../../src/feature/admins/components/AdminTable';
 
 export default function AdminPage() {
   return (

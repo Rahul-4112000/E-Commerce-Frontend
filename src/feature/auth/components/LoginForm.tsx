@@ -83,17 +83,12 @@ export const LoginForm: React.FC = () => {
       }
       showToast.success('Successfully Login');
 
-      if (data.user.role === EROLE.SUPER_ADMIN) {
-        router.push(PAGE_ROUTES.SUPER_ADMIN);
+      if (data.user.role === EROLE.USER) {
+        router.push(PAGE_ROUTES.HOME);
         return;
       }
 
-      if (data.user.role === EROLE.ADMIN) {
-        router.push(PAGE_ROUTES.ADMIN);
-        return;
-      }
-
-      router.push(PAGE_ROUTES.HOME);
+      router.push(PAGE_ROUTES.DASHBOARD.HOME);
     } catch (error: any) {
       showToast.error(error.message);
     } finally {

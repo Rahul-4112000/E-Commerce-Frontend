@@ -46,7 +46,7 @@ export const InviteForm: React.FC = () => {
     setLoading(true);
 
     try {
-      await postApi(API_PATHS.admin.register, { password, confirmPassword, inviteToken });
+      await postApi(API_PATHS.admins.invitationAccept, { password, confirmPassword, inviteToken });
       showToast.success('Account Activate successfully!');
       router.push('/admin');
     } catch (error: any) {

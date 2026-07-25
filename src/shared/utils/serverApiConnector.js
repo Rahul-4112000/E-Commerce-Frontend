@@ -12,7 +12,16 @@ export const serverApiConnector = async (apiEndPoint) => {
 
 
   if (!response.ok) {
-    throw new Error(response.error);
+    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      // Ignore JSON parse errors if response is plain text/HTML
+    }
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    throw error;
   }
   const data = await response.json();
 

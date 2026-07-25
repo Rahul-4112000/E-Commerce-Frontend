@@ -1,8 +1,12 @@
 export const PAGE_ROUTES = {
-  LOGIN: '/login',
-  REGISTER: '/register',
-  SUPER_ADMIN: '/super_admin',
-  ADMIN: '/admin',
+  AUTH: {
+    LOGIN: '/login',
+    REGISTER: '/register',
+    UNAUTHORIZED: '/unauthorized',
+  },
+  DASHBOARD: {
+    HOME: '/dashboard',
+    ADMINS: '/dashboard/admins',
+  },
   HOME: '/',
-  UNAUTHORIZED: '/unauthorized',
 };

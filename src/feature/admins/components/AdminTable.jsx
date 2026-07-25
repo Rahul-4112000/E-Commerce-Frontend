@@ -1,10 +1,10 @@
 'use client';
 import { SearchInput } from '@/shared/components/molecules/SearchInput';
 import { Table } from '@/shared/components/organisms/Table';
-import { AdminService } from '../services/admin.service';
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { buildQuery } from '../../../shared/utils/utils';
 import Pagination from '@mui/material/Pagination';
+import { getAdminList, toggleStatus } from '../api/admin.api';
 
 const initialAdminState = {
   admin: [],
@@ -31,7 +31,7 @@ export const AdminTable = () => {
   const fetchAdmins = useCallback(async (query = '', page = 1) => {
     setIsLoading(true);
     try {
-      const result = await AdminService.getAll(
+      const result = await getAdminList(
         buildQuery({
           search: query,
           page: page,
@@ -74,7 +74,7 @@ export const AdminTable = () => {
           adminUser.id === id ? { ...adminUser, isActive: !currentStatus } : adminUser
         )
       ));
-      await AdminService.toggleStatus(id, !currentStatus);
+      await toggleStatus(id, !currentStatus);
     } catch {
       setAdminData((prevState) => (
         prevState.map((adminUser) =>

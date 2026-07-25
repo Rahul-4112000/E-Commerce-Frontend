@@ -8,7 +8,7 @@ import { showToast } from '@/shared/utils/toast.util';
 import { useRouter } from 'next/navigation';
 import { PAGE_ROUTES } from '@/shared/utils/constats';
 import { Modal } from '../Modal';
-import { getUserProfile } from '@/feature/auth/api/auth.server';
+import { getUserProfile } from '@/feature/auth/api/auth.client';
 
 export const Navbar = () => {
   const [isConfirmationModalOpen, setConfirmationModel] = useState(false);
@@ -21,7 +21,7 @@ export const Navbar = () => {
       setLogOut(true);
       const logoutResponse = await authService.logout();
       if (logoutResponse.success) {
-        router.push(PAGE_ROUTES.LOGIN);
+        router.push(PAGE_ROUTES.AUTH.LOGIN);
       }
     } catch (error) {
       showToast.error('something went wrong');
