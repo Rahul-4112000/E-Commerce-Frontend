@@ -10,7 +10,7 @@ import { Loader } from 'lucide-react';
 import { showToast } from '@/shared/utils/toast.util';
 import { EROLE } from '../types/auth.type';
 import { useRouter } from 'next/navigation';
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 
 type loginCredential = {
   email: string;

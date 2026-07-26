@@ -4,7 +4,7 @@ import { InviteForm } from '@/feature/auth/components/InviteForm';
 import { getApi } from '@/shared/utils/api-connector';
 import { redirect } from 'next/navigation';
 import InvalidInvite from '@/feature/auth/components/InvalidInvite';
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 
 type props = {
   searchParams: Promise<{

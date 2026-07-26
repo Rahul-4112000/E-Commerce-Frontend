@@ -1,7 +1,7 @@
 export const PAGE_ROUTES = {
   AUTH: {
-    LOGIN: '/login',
-    REGISTER: '/register',
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
     UNAUTHORIZED: '/unauthorized',
   },
   DASHBOARD: {

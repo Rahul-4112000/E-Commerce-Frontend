@@ -8,7 +8,7 @@ import { showToast } from '@/shared/utils/toast.util';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { postApi } from '@/shared/utils/api-connector';
 import { API_PATHS } from '@/config/api.path';
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 
 export const InviteForm: React.FC = () => {
   const router = useRouter();

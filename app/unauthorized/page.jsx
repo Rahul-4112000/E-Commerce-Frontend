@@ -1,4 +1,4 @@
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 import { ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 

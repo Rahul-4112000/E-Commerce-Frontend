@@ -6,7 +6,7 @@ import { useApi } from '@/shared/hooks/use.api';
 import { authService } from '@/feature/auth/services/auth.api.service';
 import { showToast } from '@/shared/utils/toast.util';
 import { useRouter } from 'next/navigation';
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 import { Modal } from '../Modal';
 import { getUserProfile } from '@/feature/auth/api/auth.client';
 

@@ -1,22 +1,17 @@
-import { getProfileServerApi, requiredRoles } from '@/feature/auth/api/auth.server';
 import { EROLE } from '@/feature/auth/types/auth.type';
-import { PAGE_ROUTES } from '@/shared/utils/constats';
+import { requiredRoles } from '@/lib/rolesHandler';
+import { validateToken } from '@/lib/tokenHandler';
+import { PAGE_ROUTES } from '@/shared/utils/constants';
 import { redirect } from 'next/navigation';
 
 export default async function AdminsLayout({ children }) {
-  let data;
-  try {
-    data = await getProfileServerApi();
-  } catch (error) {
-    if (error.status === 401) {
-      redirect(PAGE_ROUTES.AUTH.LOGIN);
-    }
-    throw error;
+  const { isTokenValid, user } = await validateToken()
+
+  if (!isTokenValid) {
+    redirect(PAGE_ROUTES.AUTH.LOGIN)
   }
 
-  requiredRoles(data?.data?.user, [EROLE.SUPER_ADMIN]);
+  requiredRoles(user, [EROLE.SUPER_ADMIN]);
 
   return <>{children}</>;
-
-
 }
