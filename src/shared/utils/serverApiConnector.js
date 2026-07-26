@@ -8,8 +8,7 @@ export const serverApiConnector = async (apiEndPoint) => {
       Cookie: cookie
     },
     cache: 'no-cache'
-  })
-
+  });
 
   if (!response.ok) {
     let errorMessage = `API Error: ${response.status} ${response.statusText}`;
@@ -21,6 +20,7 @@ export const serverApiConnector = async (apiEndPoint) => {
     }
     const error = new Error(errorMessage);
     error.status = response.status;
+    console.error(error)
     throw error;
   }
   const data = await response.json();

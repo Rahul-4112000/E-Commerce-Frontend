@@ -8,6 +8,7 @@ import { showToast } from '@/shared/utils/toast.util';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { postApi } from '@/shared/utils/api-connector';
 import { API_PATHS } from '@/config/api.path';
+import { PAGE_ROUTES } from '@/shared/utils/constats';
 
 export const InviteForm: React.FC = () => {
   const router = useRouter();
@@ -46,9 +47,9 @@ export const InviteForm: React.FC = () => {
     setLoading(true);
 
     try {
-      await postApi(API_PATHS.admins.invitationAccept, { password, confirmPassword, inviteToken });
+      await postApi(API_PATHS.admins.invitationsAccept, { password, confirmPassword, inviteToken });
       showToast.success('Account Activate successfully!');
-      router.push('/admin');
+      router.push(PAGE_ROUTES.DASHBOARD.HOME);
     } catch (error: any) {
       showToast.error(error.message || 'Something went wrong');
     } finally {

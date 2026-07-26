@@ -6,9 +6,9 @@ export const API_PATHS = {
   },
   admins: {
     list: 'admins',
-    invitation: 'admins/invitation',
-    invitationAccept: 'admins/invitation/accept',
-    validateInvite: (token) => `admins/invitation/${token}`,
+    invitations: 'admins/invitations',
+    invitationsAccept: 'admins/invitations/accept',
+    validateInvite: (token) => `admins/invitations/${token}`,
     update: (id) => `admins/${id}`,
   }
 };

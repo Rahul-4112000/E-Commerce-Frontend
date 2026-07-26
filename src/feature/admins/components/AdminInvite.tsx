@@ -30,7 +30,7 @@ export const AdminInvite = () => {
         loading: true,
       }));
 
-      await postApi(API_PATHS.admins.invitation, { email: adminData.email });
+      await postApi(API_PATHS.admins.invitations, { email: adminData.email });
 
       showToast.success('Admin invitation sent successfully!');
       setAdminData(initialState);
