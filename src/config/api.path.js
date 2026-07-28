@@ -4,6 +4,10 @@ export const API_PATHS = {
     logout: 'auth/logout',
     me: 'auth/me',
   },
+  users: {
+    me: 'users/me',
+    changePassword: 'users/change-password',
+  },
   admins: {
     list: 'admins',
     invitations: 'admins/invitations',

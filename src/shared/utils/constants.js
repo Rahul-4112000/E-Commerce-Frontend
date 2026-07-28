@@ -7,6 +7,11 @@ export const PAGE_ROUTES = {
   DASHBOARD: {
     HOME: '/dashboard',
     ADMINS: '/dashboard/admins',
+    SETTINGS: '/dashboard/settings',
+    ORDERS: '/dashboard/orders',
+    PRODUCTS: '/dashboard/products',
+    CUSTOMERS: '/dashboard/customers',
+    CATEGORIES: '/dashboard/categories',
   },
   HOME: '/',
 };
