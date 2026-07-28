@@ -170,8 +170,7 @@ export const AdminTable = () => {
           <Pagination
             count={paginationData.totalPage}
             page={paginationData.page}
-            variant='outlined'
-            color='primary'
+            color='secondary'
             onChange={handlePageChange}
           />
         </div>

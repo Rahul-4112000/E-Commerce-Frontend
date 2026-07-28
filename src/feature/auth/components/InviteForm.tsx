@@ -3,18 +3,31 @@ import React, { useState } from 'react';
 import { Heading } from '@/shared/components/atoms/Heading';
 import { Button } from '@/shared/components/atoms/Button';
 import { FormField } from '@/shared/components/molecules/FormField';
-import { Lock, Loader } from 'lucide-react';
+import { Lock, Loader, User, Mail, Clock } from 'lucide-react';
 import { showToast } from '@/shared/utils/toast.util';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { postApi } from '@/shared/utils/api-connector';
 import { API_PATHS } from '@/config/api.path';
 import { PAGE_ROUTES } from '@/shared/utils/constants';
 
-export const InviteForm: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const inviteToken = searchParams.get('inviteToken');
+interface InviteFormProps {
+  email: string;
+  expiresAt: string;
+  inviteToken: string;
+}
 
+function formatExpiry(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+}
+
+export const InviteForm: React.FC<InviteFormProps> = ({ email, expiresAt,inviteToken }) => {
+  const router = useRouter();
+
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
@@ -47,8 +60,8 @@ export const InviteForm: React.FC = () => {
     setLoading(true);
 
     try {
-      await postApi(API_PATHS.admins.invitationsAccept, { password, confirmPassword, inviteToken });
-      showToast.success('Account Activate successfully!');
+      await postApi(API_PATHS.admins.invitationsAccept, { password, confirmPassword, inviteToken, name });
+      showToast.success('Account activated successfully!');
       router.push(PAGE_ROUTES.DASHBOARD.HOME);
     } catch (error: any) {
       showToast.error(error.message || 'Something went wrong');
@@ -59,16 +72,47 @@ export const InviteForm: React.FC = () => {
 
   return (
     <div className='w-full'>
-      <div className='mb-10'>
+      <div className='mb-8'>
         <Heading level={2} className='text-4xl font-black mb-3 text-neutral-900'>
-          Set Password
+          Activate Account
         </Heading>
         <p className='text-neutral-500 font-medium'>
-          Welcome to eRath! Please set your password to activate your account.
+          Welcome to <span className='font-semibold text-neutral-700'>eRATH</span>! Your invitation has been verified. Please complete your account setup.
         </p>
       </div>
 
+      {/* Expiry notice */}
+      <div className='flex items-center gap-2 mb-6 px-4 py-3 bg-amber-50 border border-amber-200 rounded-sm text-amber-700 text-sm font-medium'>
+        <Clock size={15} strokeWidth={2.5} className='shrink-0' />
+        <span>
+          Invitation expires on <span className='font-semibold'>{formatExpiry(expiresAt)}</span>
+        </span>
+      </div>
+
       <form className='space-y-6' onSubmit={onSubmit}>
+        {/* Email — read-only */}
+        <FormField
+          id='email'
+          label='Email'
+          type='email'
+          icon={Mail}
+          value={email}
+          disabled
+          readOnly
+          className='opacity-60 cursor-not-allowed'
+        />
+
+        {/* Name — optional */}
+        <FormField
+          id='name'
+          label='Name (optional)'
+          type='text'
+          placeholder='Your full name'
+          icon={User}
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+
         <FormField
           id='password'
           label='Password'

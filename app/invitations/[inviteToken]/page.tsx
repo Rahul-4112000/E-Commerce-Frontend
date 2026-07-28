@@ -6,20 +6,18 @@ import { redirect } from 'next/navigation';
 import InvalidInvite from '@/feature/auth/components/InvalidInvite';
 import { PAGE_ROUTES } from '@/shared/utils/constants';
 
-type props = {
-  searchParams: Promise<{
-    inviteToken?: string;
+type Props = {
+  params: Promise<{
+    inviteToken: string;
   }>;
 };
 
-export default async function InvitePage({ searchParams }: props) {
-  const query = await searchParams;
+export default async function InvitePage({ params }: Props) {
+  const { inviteToken } = await params;
 
-  if (!query.inviteToken) {
+  if (!inviteToken) {
     redirect(PAGE_ROUTES.AUTH.LOGIN);
   }
-
-  const inviteToken = query.inviteToken;
 
   let data;
   try {
@@ -32,9 +30,11 @@ export default async function InvitePage({ searchParams }: props) {
     return <InvalidInvite />;
   }
 
+  const { email, expiresAt } = data.data.invitation;
+
   return (
     <AuthTemplate>
-      <InviteForm />
+      <InviteForm email={email} expiresAt={expiresAt} inviteToken={inviteToken} />
     </AuthTemplate>
   );
 }
