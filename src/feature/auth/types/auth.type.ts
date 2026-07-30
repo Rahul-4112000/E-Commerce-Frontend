@@ -38,7 +38,7 @@ export type UpdateProfilePayload = {
     name?: string;
     phone?: string;
     avatar?: string;
-}
+} | FormData;
 
 export type ChangePasswordPayload = {
     currentPassword: string;

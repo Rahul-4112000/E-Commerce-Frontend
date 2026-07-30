@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Avatar, Box, CircularProgress, Divider, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
@@ -128,6 +128,8 @@ export default function SettingsPage() {
   const [profileForm, setProfileForm] = useState({ name: '', phone: '', avatar: '' });
   const [profileErrors, setProfileErrors] = useState<Record<string, string>>({});
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -147,12 +149,28 @@ export default function SettingsPage() {
     }
   }, [user]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        showToast.error('Image must be less than 2MB');
+        return;
+      }
+      setAvatarFile(file);
+      const reader = new FileReader();
+      console.log(reader, 'reader');
+      reader.onloadend = () => {
+        setProfileForm((prev) => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const validateProfile = () => {
     const errs: Record<string, string> = {};
     if (!profileForm.name.trim()) errs.name = 'Name is required';
     if (profileForm.name.trim().length > 50) errs.name = 'Name cannot exceed 50 characters';
-    if (profileForm.phone && profileForm.phone.length > 20)
-      errs.phone = 'Phone cannot exceed 20 characters';
+    if (profileForm.phone && profileForm.phone.length > 20) errs.phone = 'Phone cannot exceed 20 characters';
     setProfileErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -161,14 +179,37 @@ export default function SettingsPage() {
     e.preventDefault();
     if (!validateProfile()) return;
     try {
+      const formData = new FormData();
+      let hasChanges = false;
+
+      const trimmedName = profileForm.name.trim();
+      if (trimmedName !== user?.name) {
+        formData.append('name', trimmedName);
+        hasChanges = true;
+      }
+
+      const trimmedPhone = profileForm.phone.trim();
+      const originalPhone = user?.phone || '';
+      if (trimmedPhone !== originalPhone) {
+        formData.append('phone', trimmedPhone);
+        hasChanges = true;
+      }
+
+      if (avatarFile) {
+        formData.append('avatar', avatarFile);
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        showToast.success('No changes to save');
+        return;
+      }
+
       setIsSavingProfile(true);
-      const res = await updateProfile({
-        name: profileForm.name.trim(),
-        phone: profileForm.phone.trim(),
-        avatar: profileForm.avatar.trim(),
-      });
+      const res = await updateProfile(formData);
       if (res?.data?.user) {
         setData((prev) => (prev ? { ...prev, data: { user: res.data.user } } : prev));
+        setAvatarFile(null);
       }
       showToast.success('Profile updated successfully');
     } catch (err: unknown) {
@@ -182,13 +223,10 @@ export default function SettingsPage() {
     const errs: Record<string, string> = {};
     if (!passwordForm.currentPassword) errs.currentPassword = 'Current password is required';
     if (!passwordForm.newPassword) errs.newPassword = 'New password is required';
-    else if (passwordForm.newPassword.length < 5)
-      errs.newPassword = 'Password must be at least 5 characters';
-    else if (passwordForm.newPassword.length > 20)
-      errs.newPassword = 'Password cannot exceed 20 characters';
+    else if (passwordForm.newPassword.length < 5) errs.newPassword = 'Password must be at least 5 characters';
+    else if (passwordForm.newPassword.length > 20) errs.newPassword = 'Password cannot exceed 20 characters';
     if (!passwordForm.confirmPassword) errs.confirmPassword = 'Please confirm your new password';
-    else if (passwordForm.newPassword !== passwordForm.confirmPassword)
-      errs.confirmPassword = "Passwords don't match";
+    else if (passwordForm.newPassword !== passwordForm.confirmPassword) errs.confirmPassword = "Passwords don't match";
     setPasswordErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -212,10 +250,10 @@ export default function SettingsPage() {
   const avatarDisplay = profileForm.avatar || user?.avatar || DEFAULT_AVATAR;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className='min-h-screen bg-gray-50 font-sans'>
       <Navbar />
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
+      <main className='max-w-2xl mx-auto px-4 py-8'>
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
             <CircularProgress sx={{ color: '#4f46e5' }} />
@@ -224,14 +262,18 @@ export default function SettingsPage() {
           <>
             {/* ── Profile Information ──────────────────────────────────── */}
             <SectionCard
-              title="Profile Information"
-              subtitle="Update your personal details and photo"
+              title='Profile Information'
+              subtitle='Update your personal details and photo'
               icon={<PersonIcon />}
             >
               <form onSubmit={handleProfileSave} noValidate>
                 {/* Avatar row */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                  <Box sx={{ position: 'relative', flexShrink: 0 }}>
+                  <Box
+                    sx={{ position: 'relative', flexShrink: 0, cursor: 'pointer' }}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <input type='file' ref={fileInputRef} hidden accept='image/*' onChange={handleFileChange} />
                     <Avatar
                       src={avatarDisplay}
                       alt={profileForm.name || 'User'}
@@ -261,18 +303,16 @@ export default function SettingsPage() {
                     <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
                       {profileForm.name || 'Your Name'}
                     </Typography>
-                    <Typography sx={{ fontSize: 12, color: '#9ca3af' }}>
-                      {user?.email}
-                    </Typography>
+                    <Typography sx={{ fontSize: 12, color: '#9ca3af' }}>{user?.email}</Typography>
                   </Box>
                 </Box>
 
                 {/* Name */}
                 <FormField
-                  label="Name"
-                  id="name"
-                  type="text"
-                  placeholder="Your full name"
+                  label='Name'
+                  id='name'
+                  type='text'
+                  placeholder='Your full name'
                   value={profileForm.name}
                   onChange={(e) => setProfileForm((p) => ({ ...p, name: e.target.value }))}
                   error={profileErrors.name}
@@ -280,21 +320,21 @@ export default function SettingsPage() {
 
                 {/* Email (readonly) */}
                 <FormField
-                  label="Email"
-                  id="email"
-                  type="email"
+                  label='Email'
+                  id='email'
+                  type='email'
                   value={user?.email ?? ''}
                   readOnly
                   disabled
-                  className="opacity-60 cursor-not-allowed"
+                  className='opacity-60 cursor-not-allowed'
                 />
 
                 {/* Phone */}
                 <FormField
-                  label="Phone"
-                  id="phone"
-                  type="tel"
-                  placeholder="+91 98765 43210"
+                  label='Phone'
+                  id='phone'
+                  type='tel'
+                  placeholder='+91 98765 43210'
                   value={profileForm.phone}
                   onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
                   error={profileErrors.phone}
@@ -336,12 +376,12 @@ export default function SettingsPage() {
                   </Box>
                 </Box>
 
-                <Button type="submit" disabled={isSavingProfile} className="flex items-center gap-2">
+                <Button type='submit' disabled={isSavingProfile} className='flex items-center gap-2'>
                   {isSavingProfile ? (
                     <>
-                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      <svg className='animate-spin w-4 h-4' fill='none' viewBox='0 0 24 24'>
+                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
                       </svg>
                       Saving…
                     </>
@@ -356,17 +396,13 @@ export default function SettingsPage() {
             </SectionCard>
 
             {/* ── Security ─────────────────────────────────────────────── */}
-            <SectionCard
-              title="Security"
-              subtitle="Change your account password"
-              icon={<LockIcon />}
-            >
+            <SectionCard title='Security' subtitle='Change your account password' icon={<LockIcon />}>
               <form onSubmit={handlePasswordSave} noValidate>
                 <FormField
-                  label="Current Password"
-                  id="currentPassword"
-                  type="password"
-                  placeholder="Enter current password"
+                  label='Current Password'
+                  id='currentPassword'
+                  type='password'
+                  placeholder='Enter current password'
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
                   error={passwordErrors.currentPassword}
@@ -375,37 +411,31 @@ export default function SettingsPage() {
                 <Divider sx={{ my: 2, borderColor: '#f3f4f6' }} />
 
                 <FormField
-                  label="New Password"
-                  id="newPassword"
-                  type="password"
-                  placeholder="Enter new password"
+                  label='New Password'
+                  id='newPassword'
+                  type='password'
+                  placeholder='Enter new password'
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
                   error={passwordErrors.newPassword}
                 />
 
                 <FormField
-                  label="Confirm New Password"
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm new password"
+                  label='Confirm New Password'
+                  id='confirmPassword'
+                  type='password'
+                  placeholder='Confirm new password'
                   value={passwordForm.confirmPassword}
-                  onChange={(e) =>
-                    setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))
-                  }
+                  onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
                   error={passwordErrors.confirmPassword}
                 />
 
-                <Button
-                  type="submit"
-                  disabled={isSavingPassword}
-                  className="flex items-center gap-2"
-                >
+                <Button type='submit' disabled={isSavingPassword} className='flex items-center gap-2'>
                   {isSavingPassword ? (
                     <>
-                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      <svg className='animate-spin w-4 h-4' fill='none' viewBox='0 0 24 24'>
+                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z' />
                       </svg>
                       Saving…
                     </>

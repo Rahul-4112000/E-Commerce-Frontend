@@ -25,12 +25,16 @@ export const getApi = async (apiEndPoint: string) => {
 };
 
 export const postApi = async (apiEndPoint: string, body?: any) => {
+  const isFormData = body instanceof FormData;
+  const headers: HeadersInit = {};
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const request = new Request(`${BASE_URL}/${apiEndPoint}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
+    headers,
+    body: isFormData ? body : JSON.stringify(body),
     credentials: 'include',
   });
 
@@ -46,14 +50,20 @@ export const deleteApi = async (apiEndPoint: string) => {
 };
 
 export const patchApi = async (apiEndPoint: string, body: any) => {
+  const isFormData = body instanceof FormData;
+  const headers: HeadersInit = {};
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const request = new Request(`${BASE_URL}/${apiEndPoint}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
+    headers,
+    body: isFormData ? body : JSON.stringify(body),
     credentials: 'include',
   });
+
+  console.log(request, 'request');
 
   return await apiConnectors(request);
 };

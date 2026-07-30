@@ -32,6 +32,7 @@ import { getMe } from '@/feature/user/api/user.client';
 import { authService } from '@/feature/auth/services/auth.api.service';
 import { showToast } from '@/shared/utils/toast.util';
 import { Modal } from '@/shared/components/Modal';
+import { EROLE } from '@/feature/auth/types/auth.type';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_COLLAPSED_WIDTH = 72;
@@ -45,9 +46,7 @@ const NAV_ITEMS = [
   { label: 'Admins', icon: <AdminPanelSettingsIcon />, href: PAGE_ROUTES.DASHBOARD.ADMINS },
 ];
 
-const BOTTOM_NAV_ITEMS = [
-  { label: 'Settings', icon: <SettingsIcon />, href: PAGE_ROUTES.DASHBOARD.SETTINGS },
-];
+const BOTTOM_NAV_ITEMS = [{ label: 'Settings', icon: <SettingsIcon />, href: PAGE_ROUTES.DASHBOARD.SETTINGS }];
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -65,9 +64,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
   const avatarSrc = user?.avatar || '';
   const displayName = user?.name || 'User';
-  const displayRole = user?.role
-    ? user.role.replace('_', ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
-    : '';
+  const displayRole = user?.role ? user.role.replace('_', ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : '';
 
   const drawerWidth = collapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_WIDTH;
 
@@ -110,7 +107,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8f9fb' }}>
       {/* Sidebar */}
       <Drawer
-        variant="permanent"
+        variant='permanent'
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -157,17 +154,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               >
                 ER
               </Box>
-              <Typography sx={{ fontWeight: 700, fontSize: 16, color: '#111827' }}>
-                eRath
-              </Typography>
+              <Typography sx={{ fontWeight: 700, fontSize: 16, color: '#111827' }}>eRath</Typography>
             </Box>
           )}
           <IconButton
-            size="small"
+            size='small'
             onClick={() => setCollapsed((p) => !p)}
             sx={{ color: '#6b7280', '&:hover': { bgcolor: '#f3f4f6' } }}
           >
-            {collapsed ? <MenuIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
+            {collapsed ? <MenuIcon fontSize='small' /> : <ChevronLeftIcon fontSize='small' />}
           </IconButton>
         </Box>
 
@@ -175,11 +170,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
         {/* Main nav */}
         <List sx={{ px: 1, pt: 1, flexGrow: 1 }} disablePadding>
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.filter((item) => item.label !== 'Admins' || user?.role === EROLE.SUPER_ADMIN).map((item) => {
             const active = isActive(item.href);
             return (
               <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
-                <Tooltip title={collapsed ? item.label : ''} placement="right">
+                <Tooltip title={collapsed ? item.label : ''} placement='right'>
                   <ListItemButton
                     onClick={() => router.push(item.href)}
                     selected={active}
@@ -218,7 +213,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             const active = isActive(item.href);
             return (
               <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
-                <Tooltip title={collapsed ? item.label : ''} placement="right">
+                <Tooltip title={collapsed ? item.label : ''} placement='right'>
                   <ListItemButton
                     onClick={() => router.push(item.href)}
                     selected={active}
@@ -250,7 +245,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
           {/* Logout */}
           <ListItem disablePadding>
-            <Tooltip title={collapsed ? 'Logout' : ''} placement="right">
+            <Tooltip title={collapsed ? 'Logout' : ''} placement='right'>
               <ListItemButton
                 onClick={() => setLogoutModalOpen(true)}
                 sx={{
@@ -267,7 +262,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 </ListItemIcon>
                 {!collapsed && (
                   <ListItemText
-                    primary="Logout"
+                    primary='Logout'
                     slotProps={{ primary: { style: { fontSize: 14, fontWeight: 500 } } }}
                   />
                 )}
@@ -313,17 +308,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       </Drawer>
 
       {/* Main content */}
-      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+      <Box component='main' sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         {children}
       </Box>
 
       {/* Logout confirmation modal */}
       {logoutModalOpen && (
         <Modal
-          title="Confirm Logout"
+          title='Confirm Logout'
           onClose={() => setLogoutModalOpen(false)}
           onConfirm={handleLogout}
-          confirmLabel="Logout"
+          confirmLabel='Logout'
           isLoading={isLoggingOut}
         >
           Are you sure you want to log out? You will need to sign in again to access your account.
